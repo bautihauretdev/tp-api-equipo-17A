@@ -29,7 +29,27 @@ namespace api_catalogo.Controllers
         // POST: api/Catalogo
         public IHttpActionResult Post([FromBody] AltaArticuloDTO Articulo)
         {
-        
+            //validaciones
+            if (Articulo == null)
+                return BadRequest("No se recibio informacion del articulo");
+
+            if (string.IsNullOrWhiteSpace(Articulo.Codigo))
+                return BadRequest("El campo 'Codigo' es obligatorio.");
+
+            if (string.IsNullOrWhiteSpace(Articulo.Nombre))
+                return BadRequest("El campo 'Nombre' es obligatorio.");
+
+            if (string.IsNullOrWhiteSpace(Articulo.Descripcion))
+                return BadRequest("El campo 'Descripcion' es obligatorio.");
+
+            if (Articulo.IdMarca <= 0)
+                return BadRequest("El campo 'IdMarca' debe ser un número válido.");
+
+            if (Articulo.IdCategoria <= 0)
+                return BadRequest("El campo 'IdCategoria' debe ser un número válido.");
+
+            if (Articulo.Precio <= 0)
+                return BadRequest("El campo 'Precio' debe ser mayor a cero.");
 
             try
             {
