@@ -34,8 +34,19 @@ namespace api_catalogo.Controllers
         }
 
         // DELETE: api/Catalogo/5
-        public void Delete(int id)
+        // Eliminamos pasando el código del artículo
+        public void Delete(string codigo)
         {
+            try
+            {
+                ArticuloNegocio negocio = new ArticuloNegocio();
+                int id = negocio.ObtenerIdPorCodigo(codigo); // Conseguimos el id según el código
+                negocio.eliminar(id);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }
