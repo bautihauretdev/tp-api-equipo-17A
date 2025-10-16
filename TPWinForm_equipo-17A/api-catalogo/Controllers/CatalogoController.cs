@@ -7,6 +7,7 @@ using System.Web.Http;
 using dominio;
 using Microsoft.Ajax.Utilities;
 using negocio;
+using api_catalogo.Models;
 
 namespace api_catalogo.Controllers
 {
@@ -26,8 +27,31 @@ namespace api_catalogo.Controllers
         }
 
         // POST: api/Catalogo
-        public void Post([FromBody]string value)
+        public IHttpActionResult Post([FromBody] AltaArticuloDTO Articulo)
         {
+        
+
+            try
+            {
+                ArticuloNegocio negocio = new ArticuloNegocio();
+                Articulo nuevo = new Articulo();
+                nuevo.Codigo = Articulo.Codigo; 
+                nuevo.Nombre = Articulo.Nombre; 
+                nuevo.Descripcion = Articulo.Descripcion;   
+                nuevo.Marca = new Marca { id = Articulo.IdMarca };  
+                nuevo.Categoria = new Categoria { Id = Articulo.IdCategoria };
+                nuevo.Precio = Articulo.Precio; 
+
+                negocio.Agregar(nuevo);
+                
+                return Ok("Articulo agregado correctamente.");  
+
+            }
+            catch (Exception ex)
+            {
+
+               return InternalServerError(ex);
+            }
         }
 
         // PUT: api/Catalogo/5
