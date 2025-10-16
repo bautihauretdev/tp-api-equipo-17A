@@ -75,8 +75,52 @@ namespace api_catalogo.Controllers
         }
 
         // PUT: api/Catalogo/5
-        public void Put(int id, [FromBody]string value)
+        public IHttpActionResult Put(int id, [FromBody] AltaArticuloDTO Articulo)
         {
+            //validaciones
+            if (Articulo == null)
+                return BadRequest("No se recibio informacion del articulo");
+
+            if (string.IsNullOrWhiteSpace(Articulo.Codigo))
+                return BadRequest("El campo 'Codigo' es obligatorio.");
+
+            if (string.IsNullOrWhiteSpace(Articulo.Nombre))
+                return BadRequest("El campo 'Nombre' es obligatorio.");
+
+            if (string.IsNullOrWhiteSpace(Articulo.Descripcion))
+                return BadRequest("El campo 'Descripcion' es obligatorio.");
+
+            if (Articulo.IdMarca <= 0)
+                return BadRequest("El campo 'IdMarca' debe ser un número válido.");
+
+            if (Articulo.IdCategoria <= 0)
+                return BadRequest("El campo 'IdCategoria' debe ser un número válido.");
+
+            if (Articulo.Precio <= 0)
+                return BadRequest("El campo 'Precio' debe ser mayor a cero.");
+
+            try
+            {
+                ArticuloNegocio negocio = new ArticuloNegocio();
+                Articulo nuevo = new Articulo();
+                nuevo.Id = id;
+                nuevo.Codigo = Articulo.Codigo;
+                nuevo.Nombre = Articulo.Nombre;
+                nuevo.Descripcion = Articulo.Descripcion;
+                nuevo.Marca = new Marca { id = Articulo.IdMarca };
+                nuevo.Categoria = new Categoria { Id = Articulo.IdCategoria };
+                nuevo.Precio = Articulo.Precio;
+
+                negocio.modificar(nuevo);
+
+                return Ok("Articulo modificado exitosamente.");
+
+            }
+            catch (Exception ex)
+            {
+
+                return InternalServerError(ex);
+            }
         }
 
         // DELETE: api/Catalogo/5
