@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using dominio;
+using Microsoft.Ajax.Utilities;
 using negocio;
 
 namespace api_catalogo.Controllers
@@ -12,9 +13,10 @@ namespace api_catalogo.Controllers
     public class CatalogoController : ApiController
     {
         // GET: api/Catalogo
-        public IEnumerable<string> Get()
+        public IEnumerable<Articulo> Get()
         {
-            return new string[] { "value1", "value2" };
+            ArticuloNegocio negocio = new ArticuloNegocio();
+            return negocio.Listar();
         }
 
         // GET: api/Catalogo/5
@@ -34,18 +36,28 @@ namespace api_catalogo.Controllers
         }
 
         // DELETE: api/Catalogo/5
-        // Eliminamos pasando el código del artículo
-        public void Delete(string codigo)
+        public IHttpActionResult Delete(int id)
         {
             try
             {
+                // Verificamos que sea un id válido
+                if (id <= 0)
+                    return BadRequest("ID inválido.");
+
                 ArticuloNegocio negocio = new ArticuloNegocio();
-                int id = negocio.ObtenerIdPorCodigo(codigo); // Conseguimos el id según el código
+
+                // Verificar si existe el id
+                Articulo articulo = negocio.Listar().Find(a => a.Id == id);
+                if (articulo == null)
+                    return NotFound();
+
+                // Si todo está correcto, se elimina
                 negocio.eliminar(id);
+                return Ok($"Producto con ID {id} eliminado correctamente.");
             }
             catch (Exception ex)
             {
-                throw ex;
+                return InternalServerError(ex);
             }
         }
     }
