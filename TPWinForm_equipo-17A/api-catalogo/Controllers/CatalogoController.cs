@@ -91,6 +91,37 @@ namespace api_catalogo.Controllers
             }
         }
 
+
+        // POST: api/Catalogo/AgregarImagenes
+        [HttpPost]
+        [Route("api/Catalogo/AgregarImagenes")]
+        public IHttpActionResult AgregarImagenes([FromBody] AgregarImagenesDTO dto)
+        {
+            try
+            {
+                ArticuloNegocio negocio = new ArticuloNegocio();
+
+                //Verifica que el articulo existe
+                var articulo = negocio.Listar().Find(a => a.Id == dto.IdArticulo);
+                if (articulo == null)
+                    return NotFound();
+
+                //si todo ok , agrega las imagenes
+                foreach (var url in dto.Imagenes)
+                {
+                    negocio.AgregarImagen(dto.IdArticulo, url);
+                }
+
+                return Ok(new { mensaje = "Imágenes agregadas correctamente." });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+
+
         // PUT: api/Catalogo/5
         public IHttpActionResult Put(int id, [FromBody] AltaArticuloDTO Articulo)
         {
