@@ -92,33 +92,35 @@ namespace api_catalogo.Controllers
         }
 
 
-        // POST: api/Catalogo/AgregarImagenes
-        [HttpPost]
-        [Route("api/Catalogo/AgregarImagenes")]
-        public IHttpActionResult AgregarImagenes([FromBody] AgregarImagenesDTO dto)
-        {
-            try
+            // POST: api/Catalogo/AgregarImagenes
+            [HttpPost]
+            [Route("api/Catalogo/AgregarImagenes")]
+            public IHttpActionResult AgregarImagenes([FromBody] AgregarImagenesDTO dto)
             {
-                ArticuloNegocio negocio = new ArticuloNegocio();
-
-                //Verifica que el articulo existe
-                var articulo = negocio.Listar().Find(a => a.Id == dto.IdArticulo);
-                if (articulo == null)
-                    return NotFound();
-
-                //si todo ok , agrega las imagenes
-                foreach (var url in dto.Imagenes)
+                try
                 {
-                    negocio.AgregarImagen(dto.IdArticulo, url);
-                }
+                    ArticuloNegocio negocio = new ArticuloNegocio();
 
-                return Ok(new { mensaje = "Imágenes agregadas correctamente." });
+                    //Verifica que el articulo existe
+                    var articulo = negocio.Listar().Find(a => a.Id == dto.IdArticulo);
+                    if (articulo == null)
+                        return NotFound();
+
+                    //si todo ok , agrega las imagenes
+                    foreach (var url in dto.Imagenes)
+                    {
+                    if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
+                        return BadRequest($"La URL '{url}' no es válida.");
+                    negocio.AgregarImagen(dto.IdArticulo, url);
+                    }
+
+                    return Ok(new { mensaje = "Imágenes agregadas correctamente." });
+                }
+                catch (Exception ex)
+                {
+                    return InternalServerError(ex);
+                }
             }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
-        }
 
 
 
