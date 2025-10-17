@@ -97,7 +97,17 @@ namespace api_catalogo.Controllers
             [Route("api/Catalogo/AgregarImagenes")]
             public IHttpActionResult AgregarImagenes([FromBody] AgregarImagenesDTO dto)
             {
-                try
+            //validaciones
+            if (dto == null)
+                return BadRequest("No se recibió información.");
+            if (dto.IdArticulo <= 0)
+                return BadRequest("El campo 'IdArticulo' debe ser un número válido y mayor a 0.");
+            if (dto.Imagenes == null || dto.Imagenes.Count == 0)
+                return BadRequest("Debe enviar al menos una imagen.");
+            if (dto.Imagenes.Any(url => string.IsNullOrWhiteSpace(url)))
+                return BadRequest("No se permiten URLs de imágenes vacías.");
+
+            try
                 {
                     ArticuloNegocio negocio = new ArticuloNegocio();
 
