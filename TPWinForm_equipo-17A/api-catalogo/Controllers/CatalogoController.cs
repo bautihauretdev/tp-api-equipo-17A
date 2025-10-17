@@ -20,10 +20,29 @@ namespace api_catalogo.Controllers
             return negocio.Listar();
         }
 
-        // GET: api/Catalogo/5
-        public string Get(int id)
+        // GET: api/Catalogo/numId
+        public IHttpActionResult Get(int id)
         {
-            return "value";
+            try
+            {
+                // Verificamos que sea un id válido (mayor a 0)
+                if (id <= 0)
+                    return BadRequest("ID inválido.");
+
+                ArticuloNegocio negocio = new ArticuloNegocio();
+
+                // Verificar si existe el id
+                Articulo articulo = negocio.Listar().Find(a => a.Id == id);
+                if (articulo == null)
+                    return NotFound();
+
+                // Si todo está correcto, se muestra
+                return Ok(articulo);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         // POST: api/Catalogo
@@ -65,11 +84,9 @@ namespace api_catalogo.Controllers
                 negocio.Agregar(nuevo);
                 
                 return Ok("Articulo agregado correctamente.");  
-
             }
             catch (Exception ex)
             {
-
                return InternalServerError(ex);
             }
         }
@@ -114,21 +131,19 @@ namespace api_catalogo.Controllers
                 negocio.modificar(nuevo);
 
                 return Ok("Articulo modificado exitosamente.");
-
             }
             catch (Exception ex)
             {
-
                 return InternalServerError(ex);
             }
         }
 
-        // DELETE: api/Catalogo/5
+        // DELETE: api/Catalogo/numId
         public IHttpActionResult Delete(int id)
         {
             try
             {
-                // Verificamos que sea un id válido
+                // Verificamos que sea un id válido (mayor a 0)
                 if (id <= 0)
                     return BadRequest("ID inválido.");
 
